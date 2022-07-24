@@ -10,21 +10,22 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 
 
 ### Assignment1
-- [x] [k-Nearest Neighbor]
-- [ ] [Support Vector Machines]
-- [ ] Softmax Classifier
+- [x] [k-Nearest Neighbor classifier]
+- [ ] [Training a Support Vector Machine]
+- [ ] Implement a Softmax classifier
 - [ ] Two-Layer Neural Network
-- [ ] Image Features
+- [ ] Higher Level Representations: Image Features
 
 ### Assignment2
-- [ ] Fully Connected Networks
+- [ ] Fully-connected Neural Network
 - [ ] Batch Normalization
 - [ ] Dropout
 - [ ] Convolutional Networks
-- [ ] Tensorflow / Pytorch
+- [ ] PyTorch / TensorFlow on CIFAR-10
 
 ### Assignment3
-- [ ] RNN Captioning
-- [ ] LSTM Captioning
-- [ ] Network Visualization
-- [ ] GANS
+- [ ] Image Captioning with Vanilla RNNs
+- [ ] Image Captioning with LSTMs
+- [ ] Network Visualization: Salienc maps, Class Visualization, and Fooling Images
+- [ ] Style Transfer
+- [ ] Generative Adversarial Networks

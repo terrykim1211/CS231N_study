@@ -36,13 +36,16 @@ def svm_loss_naive(W, X, y, reg):
             margin = scores[j] - correct_class_score + 1 # note delta = 1
             if margin > 0:
                 loss += margin
-
+                dW[:, j] = dW[:, j] + X[i]    # My code added
+                dW[:, y[i]] = dW[:, y[i]] - X[i]   # My code added
     # Right now the loss is a sum over all training examples, but we want it
     # to be an average instead so we divide by num_train.
     loss /= num_train
+    dW /= num_train   # My code added
 
     # Add regularization to the loss.
     loss += reg * np.sum(W * W)
+    dw = dW + 2 * W * reg   # My code added (derivative of W squared is 2W)
 
     #############################################################################
     # TODO:                                                                     #
@@ -53,8 +56,6 @@ def svm_loss_naive(W, X, y, reg):
     # code above to compute the gradient.                                       #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-    pass
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
@@ -78,7 +79,31 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+
+    
+    # Step 1: Compute the entire score labels
+    scores = X.dot(W)
+
+    # Step 2: Extract the correct label values from score
+    num_train = X.shape[0]
+    correct_label_val = scores[np.arange(num_train), y]
+
+
+    
+    # Step 3: Compute (sj -syi + 1) for each image using broadcasting
+    correct_label_val = correct_label_val.reshape(num_train, -1)
+    margin = scores - correct_label_val + 1
+
+    # Step 4: Replace the labels with maximum comparison with 0, 
+    # don't count correct labels for computation
+    margin = np.maximum(margin, 0)
+    margin[np.arange(num_train), y] = 0
+
+
+    
+    loss = np.sum(margin)/num_train
+    loss += reg * np.sum(W * W)
+    
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -93,7 +118,31 @@ def svm_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # Step 1: Obtain computation information for loss labels
+    # Since dW = dL/dW, the margin tells how many loss label computation 
+    # is needed for each image  
+    computation = np.maximum(0, margin)
+    computation[computation > 0] = 1
+
+    # Step 2: Since Sj computation # = Syi computation #, account for those correct labels
+
+    correct_margin_number = np.sum(computation, axis = 1)
+    computation[np.arange(num_train), y] -= correct_margin_number
+   
+   
+ 
+    # Step 3: Use the dot product property to calculate the dL/dW, 
+    # which is corresponding image vector sums
+    # Transpose X, to make each image as column vector, allowing matrix 
+    # multiplication to be combination of image columns
+    dW = np.dot(X.T,computation)
+
+    dW = dW / num_train
+
+    dW = dW + 2 * W * reg   # (derivative of W squared is 2W)
+    
+    
+
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 

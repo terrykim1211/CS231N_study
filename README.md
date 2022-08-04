@@ -11,7 +11,7 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 
 ### Assignment1
 - [x] [k-Nearest Neighbor classifier]
-- [ ] [Training a Support Vector Machine]
+- [x] [Training a Support Vector Machine]
 - [ ] Implement a Softmax classifier
 - [ ] Two-Layer Neural Network
 - [ ] Higher Level Representations: Image Features

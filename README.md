@@ -10,9 +10,9 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 
 
 ### Assignment1
-- [x] [k-Nearest Neighbor classifier]
-- [x] [Training a Support Vector Machine]
-- [ ] Implement a Softmax classifier
+- [x] [k-Nearest Neighbor classifier](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/knn.ipynb)
+- [x] [Training a Support Vector Machine](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/svm.ipynb)
+- [x] [Implement a Softmax classifier](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/softmax.ipynb)
 - [ ] Two-Layer Neural Network
 - [ ] Higher Level Representations: Image Features
 

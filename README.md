@@ -13,8 +13,8 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 - [x] [k-Nearest Neighbor classifier](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/knn.ipynb)
 - [x] [Training a Support Vector Machine](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/svm.ipynb)
 - [x] [Implement a Softmax classifier](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/softmax.ipynb)
-- [ ] Two-Layer Neural Network
-- [ ] Higher Level Representations: Image Features
+- [x] Two-Layer Neural Network
+- [x] Higher Level Representations: Image Features
 
 ### Assignment2
 - [ ] Fully-connected Neural Network

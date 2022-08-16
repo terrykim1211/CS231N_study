@@ -80,7 +80,11 @@ class TwoLayerNet(object):
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        first_layer = np.dot(X, W1) + b1
+        first_layer = np.maximum(0, first_layer) #ReLU function
+        scores = np.dot(first_layer, W2) + b2
+        
+
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -97,8 +101,21 @@ class TwoLayerNet(object):
         # classifier loss.                                                          #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        first_layer = np.dot(X, W1) + b1
+        first_layer = np.maximum(0, first_layer) #ReLU function
+        scores = np.dot(first_layer, W2) + b2
+        
 
-        pass
+        
+        scores = np.exp(scores)
+        denominator = np.sum(scores, axis = 1)
+        scores_softmax = scores/denominator[:,None]
+        loss = np.sum(-np.log(scores_softmax[np.arange(N),y]))
+
+        loss /= N
+        loss += reg * (np.sum(W1*W1) + np.sum(W2*W2))
+ 
+
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -110,8 +127,39 @@ class TwoLayerNet(object):
         # grads['W1'] should store the gradient on W1, and be a matrix of same size #
         #############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        
+        # affine_layer1 = XW1 + b1
+        # np.max(affine_layer1, 0)  ReLU
+        # affine_layer2 = affine_layer1W2 + b
 
-        pass
+        af_1 = np.dot(X, W1) + b1
+        ac_1 = np.maximum(0, af_1) 
+        af_2 = np.dot(ac_1, W2) + b2
+
+
+        scores_softmax[np.arange(N), y] -= 1 
+        dY = scores_softmax
+        dY /= N
+
+        dW2 = np.dot(ac_1.T, dY)
+        dW2 += 2 * reg * W2
+
+        db2 = np.sum(dY, axis = 0)
+
+        dac_1 = np.dot(dY, W2.T)
+
+        # Take the gradient only for the part that are non_zero from af_1
+        daf_1 = dac_1*(af_1 > 0)
+
+        dX = np.dot(daf_1, W1.T)
+
+        dW1 = np.dot(X.T, daf_1)
+        dW1 += 2 * reg * W1
+
+        db1 = np.sum(daf_1, axis = 0)
+
+        grads = {'W1': dW1, 'b1': db1, 'W2': dW2, 'b2': db2}
+
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -156,7 +204,9 @@ class TwoLayerNet(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            sample_choice = np.random.choice(num_train, batch_size, replace = True)
+            X_batch = X[sample_choice]
+            y_batch = y[sample_choice]
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -172,7 +222,11 @@ class TwoLayerNet(object):
             #########################################################################
             # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-            pass
+            self.params['W1'] = self.params['W1'] - learning_rate * grads['W1']
+            self.params['b1'] = self.params['b1'] - learning_rate * grads['b1']
+            self.params['W2'] = self.params['W2'] - learning_rate * grads['W2']
+            self.params['b2'] = self.params['b2'] - learning_rate * grads['b2']
+            
 
             # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -218,7 +272,11 @@ class TwoLayerNet(object):
         ###########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+
+        #Note that in loss function,
+        #If y is None, return a matrix scores of shape (N, C) where scores[i, c] is
+        #the score for class c on input X[i].
+        y_pred = np.argmax(self.loss(X), axis = 1)
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 

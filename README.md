@@ -17,7 +17,7 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 - [x] [Higher Level Representations: Image Features](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/features.ipynb)
 
 ### Assignment2
-- [x] [Fully-connected Neural Network] (https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/FullyConnectedNets.ipynb)
+- [x] [Fully-connected Neural Network](https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/FullyConnectedNets.ipynb)
 - [ ] Batch Normalization
 - [ ] Dropout
 - [ ] Convolutional Networks

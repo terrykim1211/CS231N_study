@@ -18,7 +18,7 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 
 ### Assignment2
 - [x] [Fully-connected Neural Network](https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/FullyConnectedNets.ipynb)
-- [ ] Batch Normalization
+- [x] [Batch Normalization](https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/BatchNormalization.ipynb)
 - [ ] Dropout
 - [ ] Convolutional Networks
 - [ ] PyTorch / TensorFlow on CIFAR-10

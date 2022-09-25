@@ -202,8 +202,23 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         # might prove to be helpful.                                          #
         #######################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+        
+        x_mean = x.mean(axis=0)
+        x_var = x.var(axis=0) 
+        x_hat = (x - x_mean) / np.sqrt((x_var + eps))
+        x_norm = x_hat * gamma + beta
 
-        pass
+     
+
+        out = x_norm
+
+        running_mean = momentum * running_mean + (1 - momentum) * x_mean
+        running_var = momentum * running_var + (1 - momentum) * (x_var + eps)
+        running_std = np.sqrt(running_var)
+
+        
+
+        cache = {'x':x,'mean':x_mean,'var':x_var,'gamma':gamma,'x_hat':x_hat, 'x_norm': x_norm, 'eps': eps}
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         #######################################################################
@@ -218,7 +233,13 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         #######################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-        pass
+        bn_param['running_mean'] = running_mean
+        bn_param['running_var'] = running_var
+
+        x_norm = (x - running_mean) / np.sqrt(running_var + eps)
+        x_norm = x_norm * gamma + beta
+
+        out = x_norm
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         #######################################################################
@@ -260,8 +281,29 @@ def batchnorm_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    inv_std = 1 / np.sqrt(cache['var'] + cache['eps'])
+    x_hat = cache['x_hat']
+    gamma = cache['gamma']
 
+    N, D = cache['x'].shape
+
+    dbeta = np.sum(dout, axis=0)
+    dgamma = np.sum(dout * x_hat, axis=0)
+    dx_hat = gamma * dout
+    dxmu1 = dx_hat * (inv_std) 
+
+    divar = np.sum(dx_hat * (cache['x'] - cache['mean']), axis = 0)
+    dsqrtvar = divar * (inv_std**2) * -1
+    dvar = dsqrtvar * 0.5 * (inv_std)
+    dsq = 1/N * np.ones((N,D)) * dvar
+    dxmu2 = dsq * 2 * (cache['x'] - cache['mean'])
+
+    dmu = -np.sum((dxmu1 + dxmu2), axis = 0)
+    dx2 = 1/N * np.ones((N,D)) * dmu
+    dx1 = dxmu1 + dxmu2
+
+    dx = dx1 + dx2
+  
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -279,7 +321,7 @@ def batchnorm_backward_alt(dout, cache):
     should be able to derive a simple expression for the backward pass. 
     See the jupyter notebook for more hints.
      
-    Note: This implementation should expect to receive the same cache variable
+    Note: This imple mentation should expect to receive the same cache variable
     as batchnorm_backward, but might not use all of the values in the cache.
 
     Inputs / outputs: Same as batchnorm_backward
@@ -294,8 +336,17 @@ def batchnorm_backward_alt(dout, cache):
     # single statement; our implementation fits on a single 80-character line.#
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    N, D = cache['x'].shape
+    x, x_mean, x_var, gamma, x_hat, x_norm, eps = cache.values()
+    inv_std = 1 / np.sqrt(x_var + eps)
 
-    pass
+    dgamma = np.sum(dout * x_hat, axis = 0) 
+    dbeta = np.sum(dout, axis = 0)
+    dx_hat = dout * gamma
+    dmu = -gamma * inv_std * dbeta 
+    dvar = -0.5 * gamma * (x_var + eps)**-1.5 * np.sum(dout * (x - x_mean) , axis = 0)
+  
+    dx = (dx_hat * inv_std) + (dmu / N)  + (dvar * 2 * (x - x_mean))/N
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -341,8 +392,17 @@ def layernorm_forward(x, gamma, beta, ln_param):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # Note for myself: it is almost identical to batchnorm_forward
+    # Except that the computation axis is different, 
+    # and running time and test time has same computation 
+    x_mean = np.mean(x, axis = 1, keepdims = True)
+    x_var = np.var(x, axis = 1, keepdims = True) 
+    x_hat = (x - x_mean) / np.sqrt(x_var + eps)
+    x_norm = x_hat * gamma + beta
 
+    out = x_norm
+
+    cache = {'x':x,'mean':x_mean,'var':x_var,'gamma':gamma,'x_hat':x_hat, 'x_norm': x_norm, 'eps': eps}
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -376,7 +436,31 @@ def layernorm_backward(dout, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    # Perform almost identical backprop computation with batchnorm
+    # Difference is in axis and normalization size (due to direction dif)
+    # N -> D
+    inv_std = 1 / np.sqrt(cache['var'] + cache['eps'])
+    x_hat = cache['x_hat']
+    gamma = cache['gamma']
+
+    N, D = cache['x'].shape
+
+    dbeta = np.sum(dout, axis=0)
+    dgamma = np.sum(dout * x_hat, axis=0)
+    dx_hat = gamma * dout
+    dxmu1 = dx_hat * (inv_std) 
+
+    divar = np.sum(dx_hat * (cache['x'] - cache['mean']), axis = 1, keepdims = True)
+    dsqrtvar = divar * (inv_std**2) * -1
+    dvar = dsqrtvar * 0.5 * (inv_std)
+    dsq = 1/D * np.ones((N,D)) * dvar
+    dxmu2 = dsq * 2 * (cache['x'] - cache['mean'])
+
+    dmu = -np.sum((dxmu1 + dxmu2), axis = 1, keepdims = True)
+    dx2 = 1/D * np.ones((N,D)) * dmu
+    dx1 = dxmu1 + dxmu2
+
+    dx = dx1 + dx2
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################

@@ -217,12 +217,11 @@ class FullyConnectedNet(object):
           self.params['W'+str(i+1)] = std * np.random.randn(dimensions[i], dimensions[i+1])
           self.params['b'+str(i+1)] = np.zeros(dimensions[i+1])
 
-        #batch normalization
-        if normalization != None:
-        #using the hidden layers
-          for i in range(self.num_layers - 1):
-            self.params['gamma' + str(i+1)] =  np.ones(dimensions[i+1])
-            self.params['beta' + str(i+1)] = np.zero(dimensions[i+1])
+          #batch normalization layers (has one less final layer than affine)
+          #Since {affine - [batch/layer norm] - relu - [dropout]} x (L - 1) - affine - softmax
+          if (normalization != None) and (i != self.num_layers - 1):
+              self.params['gamma' + str(i+1)] =  np.ones(dimensions[i+1])
+              self.params['beta' + str(i+1)] = np.zeros(dimensions[i+1])
        
 
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
@@ -285,14 +284,39 @@ class FullyConnectedNet(object):
         ############################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
+        caches_norm = []
+        caches_affine = []
+        caches_dropout = []
+        caches_relu = []
 
-        caches = []
         x = X
+
+        
         for i in range(self.num_layers - 1):
           W = self.params['W' + str(i+1)]
           b = self.params['b' + str(i+1)]
-          x, r_cache = affine_relu_forward(x, W, b)
-          caches.append(r_cache)
+          x, affine_cache = affine_forward(x, W, b)
+          caches_affine.append(affine_cache)
+
+          #Normalization
+          if self.normalization == 'batchnorm':
+            gamma = self.params['gamma' + str(i+1)]
+            beta = self.params['beta' + str(i+1)]
+            x, batch_cache = batchnorm_forward(x, gamma, beta, self.bn_params[i])
+            caches_norm.append(batch_cache)
+          if self.normalization == 'layernorm':
+            gamma = self.params['gamma' + str(i+1)]
+            beta = self.params['beta' + str(i+1)]
+            x, layer_cache = layernorm_forward(x, gamma, beta, self.bn_params[i])
+            caches_norm.append(layer_cache)
+
+          #ReLU
+          x, relu_cache = relu_forward(x)
+          caches_relu.append(relu_cache)
+
+          if self.use_dropout:
+            x, dropout_cache = dropout_forward(x, self.dropout_param)
+            caches_dropout.append(dropout_cache)
           
             
        
@@ -301,7 +325,9 @@ class FullyConnectedNet(object):
         W = self.params['W' + str(self.num_layers)]
         b = self.params['b' + str(self.num_layers)]
         scores, final_cache = affine_forward(x, W, b)
-        caches.append(final_cache)
+        caches_affine.append(final_cache)
+
+        
       
     
 
@@ -339,17 +365,37 @@ class FullyConnectedNet(object):
           w_reg_total += np.sum(np.square(self.params['W' + str(i+1)]))
         loss += 0.5 * self.reg * w_reg_total 
 
-        dx, dw, db = affine_backward(dLoss, caches[self.num_layers - 1])
+        #Backprop the final end affine layer first
+        dx, dw, db = affine_backward(dLoss, caches_affine[self.num_layers - 1])
         grads['W' + str(self.num_layers)] = dw + self.reg * self.params['W' + str(self.num_layers)]
         grads['b' + str(self.num_layers)] = db
 
-
-
+      
         for i in reversed(range(self.num_layers-1)):
-          dx, dw, db = affine_relu_backward(dx, caches[i])
+          # Dropout
+          if self.use_dropout:
+            dx = dropout_backward(dx, caches_dropout[i])
+
+          # ReLU
+          dx = relu_backward(dx, caches_relu[i])
+          
+          # Normalization
+          if self.normalization == 'batchnorm':
+            dx, dgamma, dbeta = batchnorm_backward(dx, caches_norm[i])
+            grads['gamma' + str(i+1)] = dgamma
+            grads['beta' + str(i+1)] = dbeta
+          
+          if self.normalization == 'layernorm':
+            dx, dgamma, dbeta = layernorm_backward(dx, caches_norm[i])
+            grads['gamma' + str(i+1)] = dgamma
+            grads['beta' + str(i+1)] = dbeta
+         
+          # Affine
+          dx, dw, db = affine_backward(dx, caches_affine[i])
           grads['W' + str(i+1)] = dw + self.reg * self.params['W' + str(i+1)]
           grads['b' + str(i+1)] = db
 
+          
  
   
 

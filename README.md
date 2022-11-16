@@ -10,16 +10,16 @@ Lectures for the course [here](https://www.youtube.com/playlist?list=PLC1qU-LWwr
 
 
 ### Assignment1
-- [x] [k-Nearest Neighbor classifier](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/knn.ipynb)
-- [x] [Training a Support Vector Machine](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/svm.ipynb)
-- [x] [Implement a Softmax classifier](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/softmax.ipynb)
-- [x] [Two-Layer Neural Network](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/two_layer_net.ipynb)
-- [x] [Higher Level Representations: Image Features](https://github.com/terrykim1211/CS231N_study/blob/main/assignment1/features.ipynb)
+- [x] [k-Nearest Neighbor classifier](https://github.com/winterrykim/CS231N_study/blob/main/assignment1/knn.ipynb)
+- [x] [Training a Support Vector Machine](https://github.com/winterrykim/CS231N_study/blob/main/assignment1/svm.ipynb)
+- [x] [Implement a Softmax classifier](https://github.com/winterrykim/CS231N_study/blob/main/assignment1/softmax.ipynb)
+- [x] [Two-Layer Neural Network](https://github.com/winterrykim/CS231N_study/blob/main/assignment1/two_layer_net.ipynb)
+- [x] [Higher Level Representations: Image Features](https://github.com/winterrykim/CS231N_study/blob/main/assignment1/features.ipynb)
 
 ### Assignment2
-- [x] [Fully-connected Neural Network](https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/FullyConnectedNets.ipynb)
-- [x] [Batch Normalization](https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/BatchNormalization.ipynb)
-- [x] [Dropout](https://github.com/terrykim1211/CS231N_study/blob/main/assignment2/Dropout.ipynb)
+- [x] [Fully-connected Neural Network](https://github.com/winterrykim/CS231N_study/blob/main/assignment2/FullyConnectedNets.ipynb)
+- [x] [Batch Normalization](https://github.com/winterrykim/CS231N_study/blob/main/assignment2/BatchNormalization.ipynb)
+- [x] [Dropout](https://github.com/winterrykim/CS231N_study/blob/main/assignment2/Dropout.ipynb)
 - [ ] Convolutional Networks
 - [ ] PyTorch / TensorFlow on CIFAR-10
 
